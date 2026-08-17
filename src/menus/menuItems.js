@@ -1,7 +1,7 @@
 export const menuItems = {
   arquivo: [
-    'Abrir imagem',
-    'Salvar imagem',
+    'Adicionar arquivo',
+    'Salvar arquivo',
     'Sobre',
     'Sair'
   ],
