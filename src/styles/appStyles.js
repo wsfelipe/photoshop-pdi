@@ -109,6 +109,14 @@ export const styles = {
     margin: '12px',
     borderRadius: '6px',
     border: '2px dashed #30363d',
+    overflow: 'hidden',
+    cursor: 'pointer',
+  },
+  loadedImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    backgroundColor: '#0d1117',
   },
   panelPlaceholder: {
     textAlign: 'center',

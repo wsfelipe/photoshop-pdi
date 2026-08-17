@@ -11,9 +11,13 @@ export default function MenuDropdown({
   onToggle,
   onHoverMenu,
   onHoverItem,
+  onSelectItem,
 }) {
   return (
-    <div style={{ position: 'relative' }}>
+    <div
+      style={{ position: 'relative' }}
+      onClick={(event) => event.stopPropagation()}
+    >
       <button
         style={{
           ...styles.menuButton,
@@ -21,13 +25,16 @@ export default function MenuDropdown({
         }}
         onMouseEnter={() => onHoverMenu(menuKey)}
         onMouseLeave={() => onHoverMenu(null)}
-        onClick={() => onToggle(menuKey)}
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggle(menuKey);
+        }}
       >
         {label}
       </button>
-      
+
       {isOpen && (
-        <div style={styles.menuDropdown}>
+        <div style={styles.menuDropdown} onClick={(event) => event.stopPropagation()}>
           {items.map((item, idx) => (
             <button
               key={idx}
@@ -37,6 +44,11 @@ export default function MenuDropdown({
               }}
               onMouseEnter={() => onHoverItem(`${menuKey}-${idx}`)}
               onMouseLeave={() => onHoverItem(null)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelectItem?.(item);
+                onToggle(menuKey);
+              }}
             >
               {item}
             </button>
