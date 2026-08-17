@@ -10,8 +10,21 @@ export default function App() {
   const [hoverMenu, setHoverMenu] = useState(null);
   const [hoverItem, setHoverItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [statusMessage, setStatusMessage] = useState('Pronto para processar imagens');
+  const [statusMessage] = useState('Pronto para processar imagens');
+  const [toast, setToast] = useState(null);
   const fileInputRef = useRef(null);
+  const toastTimeoutRef = useRef(null);
+
+  const showToast = (message) => {
+    setToast(message);
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const toggleMenu = (menu) => {
     setOpenMenu((current) => (current === menu ? null : menu));
@@ -29,7 +42,7 @@ export default function App() {
     }
 
     if (!file.type.startsWith('image/')) {
-      setStatusMessage('Arquivo inválido. Selecione uma imagem.');
+      showToast('Arquivo inválido. Selecione uma imagem.');
       event.target.value = '';
       return;
     }
@@ -37,7 +50,7 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = () => {
       setSelectedImage(reader.result);
-      setStatusMessage(`Imagem carregada: ${file.name}`);
+      showToast(`Imagem carregada: ${file.name}`);
     };
     reader.readAsDataURL(file);
     event.target.value = '';
@@ -45,7 +58,7 @@ export default function App() {
 
   const saveSelectedImage = () => {
     if (!selectedImage) {
-      setStatusMessage('Nenhuma imagem foi adicionada para salvar.');
+      showToast('Nenhuma imagem foi adicionada para salvar.');
       return;
     }
 
@@ -55,33 +68,48 @@ export default function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setStatusMessage('Arquivo salvo com sucesso.');
+    showToast('Arquivo salvo com sucesso.');
   };
 
   const handleMenuAction = (item) => {
-    if (item === 'Adicionar arquivo') {
-      openFilePicker();
-      return;
-    }
-
-    if (item === 'Salvar arquivo') {
-      saveSelectedImage();
-      return;
-    }
-
-    if (item === 'Sobre') {
-      setStatusMessage('Sistema de processamento de imagens em desenvolvimento.');
-      return;
-    }
-
-    if (item === 'Sair') {
-      setStatusMessage('Aplicação encerrada.');
-      return;
+    switch (item) {
+      case 'Adicionar arquivo':
+        openFilePicker();
+        break;
+      case 'Salvar arquivo':
+        saveSelectedImage();
+        break;
+      case 'Sobre':
+        showToast('Sistema de processamento de imagens em desenvolvimento.');
+        break;
+      case 'Sair':
+        showToast('Aplicação encerrada.');
+        break;
+      case 'Transladar':
+      case 'Rotacionar':
+      case 'Espelhar':
+      case 'Aumentar':
+      case 'Diminuir':
+      case 'Grayscale':
+      case 'Passa Baixa':
+      case 'Passa Alta':
+      case 'Threshold':
+      case 'Dilatação':
+      case 'Erosão':
+      case 'Abertura':
+      case 'Fechamento':
+      case 'Afinamento':
+      case 'DESAFIO':
+        showToast(`${item} em desenvolvimento.`);
+        break;
+      default:
+        break;
     }
   };
 
   return (
     <div style={styles.container} onClick={() => setOpenMenu(null)}>
+      {toast && <div style={styles.toast}>{toast}</div>}
       <input
         ref={fileInputRef}
         type="file"
