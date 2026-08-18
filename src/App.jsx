@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import Header from './components/Header';
 import MenuBar from './components/MenuBar';
 import MainContent from './components/MainContent';
-import StatusBar from './components/StatusBar';
 import { styles } from './styles/appStyles';
 
 export default function App() {
@@ -10,7 +9,6 @@ export default function App() {
   const [hoverMenu, setHoverMenu] = useState(null);
   const [hoverItem, setHoverItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [statusMessage] = useState('Pronto para processar imagens');
   const [toast, setToast] = useState(null);
   const fileInputRef = useRef(null);
   const toastTimeoutRef = useRef(null);
@@ -131,7 +129,6 @@ export default function App() {
         selectedImage={selectedImage}
         onOpenFilePicker={openFilePicker}
       />
-      <StatusBar message={statusMessage} />
     </div>
   );
 }

@@ -136,15 +136,6 @@ export const styles = {
     fontSize: '11px',
     margin: 0,
   },
-  statusBar: {
-    backgroundColor: '#161b22',
-    borderTop: '1px solid #30363d',
-    padding: '8px 16px',
-    color: '#8b949e',
-    fontSize: '11px',
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
   toast: {
     position: 'fixed',
     right: '16px',
