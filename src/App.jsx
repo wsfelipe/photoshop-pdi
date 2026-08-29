@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Header from './components/Header';
 import MenuBar from './components/MenuBar';
 import MainContent from './components/MainContent';
+import DraggableToolPanel from './components/DraggableToolPanel';
 import TransladarMenu from './functions/transformacoes/transladar/TransladarMenu';
 import { styles } from './styles/appStyles';
 
@@ -13,12 +14,9 @@ export default function App() {
   const [processedImage, setProcessedImage] = useState(null);
   const [activeTool, setActiveTool] = useState(null);
   const [panelPosition, setPanelPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
   const [toast, setToast] = useState(null);
   const fileInputRef = useRef(null);
   const toastTimeoutRef = useRef(null);
-  const toolPanelRef = useRef(null);
-  const dragStateRef = useRef({ active: false, offsetX: 0, offsetY: 0 });
 
   const showToast = (message) => {
     setToast(message);
@@ -119,8 +117,8 @@ export default function App() {
       return;
     }
 
-    const panelWidth = toolPanelRef.current?.offsetWidth || 520;
-    const panelHeight = toolPanelRef.current?.offsetHeight || 520;
+    const panelWidth = 520;
+    const panelHeight = 520;
     const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
     const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
     const initialX = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
@@ -128,54 +126,6 @@ export default function App() {
 
     setPanelPosition({ x: initialX, y: initialY });
   }, [activeTool, selectedImage]);
-
-  useEffect(() => {
-    const handleMouseMove = (event) => {
-      if (!dragStateRef.current.active || !toolPanelRef.current) {
-        return;
-      }
-
-      const panelWidth = toolPanelRef.current.offsetWidth || 520;
-      const panelHeight = toolPanelRef.current.offsetHeight || 520;
-      const nextX = event.clientX - dragStateRef.current.offsetX;
-      const nextY = event.clientY - dragStateRef.current.offsetY;
-      const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
-      const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
-
-      setPanelPosition({
-        x: Math.min(Math.max(nextX, 16), maxX),
-        y: Math.min(Math.max(nextY, 16), maxY),
-      });
-    };
-
-    const handleMouseUp = () => {
-      dragStateRef.current.active = false;
-      setIsDragging(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  const handleDragStart = (event) => {
-    if (!toolPanelRef.current) {
-      return;
-    }
-
-    const rect = toolPanelRef.current.getBoundingClientRect();
-    dragStateRef.current = {
-      active: true,
-      offsetX: event.clientX - rect.left,
-      offsetY: event.clientY - rect.top,
-    };
-    setIsDragging(true);
-    event.preventDefault();
-  };
 
   const handleProcessedImage = (resultCanvas) => {
     if (!resultCanvas) {
@@ -224,40 +174,18 @@ export default function App() {
         onMenuAction={handleMenuAction}
       />
       {activeTool === 'transladar' && selectedImage && (
-        <div
-          ref={toolPanelRef}
-          style={{
-            ...styles.toolPanel,
-            left: `${panelPosition.x}px`,
-            top: `${panelPosition.y}px`,
-          }}
+        <DraggableToolPanel
+          title="Transladar imagem"
+          initialPosition={panelPosition}
+          onClose={() => setActiveTool(null)}
         >
-          <div
-            style={{
-              ...styles.toolPanelHeader,
-              cursor: isDragging ? 'grabbing' : 'grab',
-            }}
-            onMouseDown={handleDragStart}
-          >
-            <span style={styles.toolPanelTitle}>Transladar imagem</span>
-            <button
-              type="button"
-              style={styles.closeButton}
-              onMouseDown={(event) => event.stopPropagation()}
-              onClick={() => setActiveTool(null)}
-            >
-              ✕
-            </button>
-          </div>
-          <div style={styles.toolPanelBody}>
-            <TransladarMenu
-              initialImageSrc={selectedImage}
-              onPreview={handlePreviewImage}
-              onProcessar={handleProcessedImage}
-              onClose={() => setActiveTool(null)}
-            />
-          </div>
-        </div>
+          <TransladarMenu
+            initialImageSrc={selectedImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={() => setActiveTool(null)}
+          />
+        </DraggableToolPanel>
       )}
 
       <MainContent
