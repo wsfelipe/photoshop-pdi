@@ -6,6 +6,7 @@ export default function DraggableToolPanel({
   onClose,
   children,
   initialPosition,
+  onPositionChange,
 }) {
   const panelRef = useRef(null);
   const dragStateRef = useRef({ active: false, offsetX: 0, offsetY: 0 });
@@ -13,20 +14,15 @@ export default function DraggableToolPanel({
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    const panelWidth = panelRef.current?.offsetWidth || 520;
-    const panelHeight = panelRef.current?.offsetHeight || 520;
-
     if (initialPosition) {
-      setPosition(initialPosition);
-      return;
+      setPosition((current) => {
+        if (current.x === initialPosition.x && current.y === initialPosition.y) {
+          return current;
+        }
+
+        return initialPosition;
+      });
     }
-
-    const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
-    const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
-    const nextX = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
-    const nextY = Math.min(Math.max((window.innerHeight - panelHeight) / 2, 16), maxY);
-
-    setPosition({ x: nextX, y: nextY });
   }, [initialPosition]);
 
   useEffect(() => {
@@ -42,10 +38,13 @@ export default function DraggableToolPanel({
       const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
       const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
 
-      setPosition({
+      const nextPosition = {
         x: Math.min(Math.max(nextX, 16), maxX),
         y: Math.min(Math.max(nextY, 16), maxY),
-      });
+      };
+
+      setPosition(nextPosition);
+      onPositionChange?.(nextPosition);
     };
 
     const handleMouseUp = () => {

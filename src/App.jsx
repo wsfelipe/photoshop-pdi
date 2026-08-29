@@ -1,10 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Header from './components/Header';
 import MenuBar from './components/MenuBar';
 import MainContent from './components/MainContent';
 import DraggableToolPanel from './components/DraggableToolPanel';
 import TransladarMenu from './functions/transformacoes/transladar/TransladarMenu';
+import RotacionarMenu from './functions/transformacoes/rotacionar/RotacionarMenu';
 import { styles } from './styles/appStyles';
+
+const getCenteredPanelPosition = () => {
+  const panelWidth = 520;
+  const panelHeight = 520;
+  const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
+  const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
+  const x = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
+  const y = Math.min(Math.max((window.innerHeight - panelHeight) / 2, 16), maxY);
+
+  return { x, y };
+};
 
 export default function App() {
   const [openMenu, setOpenMenu] = useState(null);
@@ -12,9 +24,12 @@ export default function App() {
   const [hoverItem, setHoverItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [processedImage, setProcessedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [activeTool, setActiveTool] = useState(null);
-  const [panelPosition, setPanelPosition] = useState({ x: 0, y: 0 });
+  const [panelPosition, setPanelPosition] = useState(() => getCenteredPanelPosition());
   const [toast, setToast] = useState(null);
+  const currentImage = processedImage || selectedImage;
+  const displayImage = previewImage || processedImage || selectedImage;
   const fileInputRef = useRef(null);
   const toastTimeoutRef = useRef(null);
 
@@ -53,6 +68,8 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = () => {
       setSelectedImage(reader.result);
+      setProcessedImage(null);
+      setPreviewImage(null);
       showToast(`Imagem carregada: ${file.name}`);
     };
     reader.readAsDataURL(file);
@@ -83,14 +100,19 @@ export default function App() {
         saveSelectedImage();
         break;
       case 'Transladar':
-        if (!selectedImage) {
+        if (!currentImage) {
           showToast('Selecione uma imagem antes de aplicar a translação.');
           return;
         }
-        setProcessedImage(null);
         setActiveTool('transladar');
         break;
       case 'Rotacionar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a rotação.');
+          return;
+        }
+        setActiveTool('rotacionar');
+        break;
       case 'Espelhar':
       case 'Aumentar':
       case 'Diminuir':
@@ -112,46 +134,40 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (activeTool !== 'transladar' || !selectedImage) {
-      return;
-    }
 
-    const panelWidth = 520;
-    const panelHeight = 520;
-    const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
-    const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
-    const initialX = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
-    const initialY = Math.min(Math.max((window.innerHeight - panelHeight) / 2, 16), maxY);
-
-    setPanelPosition({ x: initialX, y: initialY });
-  }, [activeTool, selectedImage]);
-
-  const handleProcessedImage = (resultCanvas) => {
+  const normalizeImageSource = useCallback((resultCanvas) => {
     if (!resultCanvas) {
-      return;
+      return null;
     }
 
     if (typeof resultCanvas.toDataURL === 'function') {
-      setProcessedImage(resultCanvas.toDataURL('image/png'));
-    } else {
-      setProcessedImage(resultCanvas);
+      return resultCanvas.toDataURL('image/png');
     }
 
+    return resultCanvas;
+  }, []);
+
+  const handleProcessedImage = useCallback((resultCanvas) => {
+    const normalized = normalizeImageSource(resultCanvas);
+
+    if (!normalized) {
+      return;
+    }
+
+    setProcessedImage(normalized);
+    setPreviewImage(null);
     setActiveTool(null);
-  };
+  }, [normalizeImageSource]);
 
-  const handlePreviewImage = (resultCanvas) => {
-    if (!resultCanvas) {
+  const handlePreviewImage = useCallback((resultCanvas) => {
+    const normalized = normalizeImageSource(resultCanvas);
+
+    if (!normalized) {
       return;
     }
 
-    if (typeof resultCanvas.toDataURL === 'function') {
-      setProcessedImage(resultCanvas.toDataURL('image/png'));
-    } else {
-      setProcessedImage(resultCanvas);
-    }
-  };
+    setPreviewImage(normalized);
+  }, [normalizeImageSource]);
 
   return (
     <div style={styles.container} onClick={() => setOpenMenu(null)}>
@@ -173,14 +189,31 @@ export default function App() {
         setHoverItem={setHoverItem}
         onMenuAction={handleMenuAction}
       />
-      {activeTool === 'transladar' && selectedImage && (
+      {activeTool === 'transladar' && currentImage && (
         <DraggableToolPanel
           title="Transladar imagem"
           initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
           onClose={() => setActiveTool(null)}
         >
           <TransladarMenu
-            initialImageSrc={selectedImage}
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={() => setActiveTool(null)}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'rotacionar' && currentImage && (
+        <DraggableToolPanel
+          title="Rotacionar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={() => setActiveTool(null)}
+        >
+          <RotacionarMenu
+            initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
             onClose={() => setActiveTool(null)}
@@ -190,7 +223,7 @@ export default function App() {
 
       <MainContent
         selectedImage={selectedImage}
-        transformedImage={processedImage}
+        transformedImage={displayImage}
         activeTool={activeTool}
         onOpenFilePicker={openFilePicker}
         onProcessImage={handleProcessedImage}
