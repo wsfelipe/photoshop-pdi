@@ -2,8 +2,6 @@ export const menuItems = {
   arquivo: [
     'Adicionar arquivo',
     'Salvar arquivo',
-    'Sobre',
-    'Sair'
   ],
   transformacoes: [
     'Transladar',
