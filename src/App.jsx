@@ -6,6 +6,8 @@ import DraggableToolPanel from './components/DraggableToolPanel';
 import TransladarMenu from './functions/transformacoes/transladar/TransladarMenu';
 import RotacionarMenu from './functions/transformacoes/rotacionar/RotacionarMenu';
 import EspelharMenu from './functions/transformacoes/espelhar/EspelharMenu';
+import AumentarMenu from './functions/transformacoes/aumentar/AumentarMenu';
+import DiminuirMenu from './functions/transformacoes/diminuir/DiminuirMenu';
 import { styles } from './styles/appStyles';
 
 const getCenteredPanelPosition = () => {
@@ -78,13 +80,15 @@ export default function App() {
   };
 
   const saveSelectedImage = () => {
-    if (!selectedImage) {
+    const imageToSave = displayImage || selectedImage;
+
+    if (!imageToSave) {
       showToast('Nenhuma imagem foi adicionada para salvar.');
       return;
     }
 
     const link = document.createElement('a');
-    link.href = selectedImage;
+    link.href = imageToSave;
     link.download = 'imagem-processada.png';
     document.body.appendChild(link);
     link.click();
@@ -122,7 +126,19 @@ export default function App() {
         setActiveTool('espelhar');
         break;
       case 'Aumentar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o aumento.');
+          return;
+        }
+        setActiveTool('aumentar');
+        break;
       case 'Diminuir':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a diminuição.');
+          return;
+        }
+        setActiveTool('diminuir');
+        break;
       case 'Grayscale':
       case 'Passa Baixa':
       case 'Passa Alta':
@@ -244,12 +260,41 @@ export default function App() {
         </DraggableToolPanel>
       )}
 
+      {activeTool === 'aumentar' && currentImage && (
+        <DraggableToolPanel
+          title="Aumentar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={() => setActiveTool(null)}
+        >
+          <AumentarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={() => setActiveTool(null)}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'diminuir' && currentImage && (
+        <DraggableToolPanel
+          title="Diminuir imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={() => setActiveTool(null)}
+        >
+          <DiminuirMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={() => setActiveTool(null)}
+          />
+        </DraggableToolPanel>
+      )}
+
       <MainContent
-        selectedImage={selectedImage}
-        transformedImage={displayImage}
-        activeTool={activeTool}
+        imageSrc={displayImage}
         onOpenFilePicker={openFilePicker}
-        onProcessImage={handleProcessedImage}
       />
     </div>
   );
