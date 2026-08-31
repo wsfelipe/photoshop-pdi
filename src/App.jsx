@@ -1,9 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Header from './components/Header';
 import MenuBar from './components/MenuBar';
 import MainContent from './components/MainContent';
+import DraggableToolPanel from './components/DraggableToolPanel';
 import TransladarMenu from './functions/transformacoes/transladar/TransladarMenu';
+import RotacionarMenu from './functions/transformacoes/rotacionar/RotacionarMenu';
+import EspelharMenu from './functions/transformacoes/espelhar/EspelharMenu';
+import AumentarMenu from './functions/transformacoes/aumentar/AumentarMenu';
+import DiminuirMenu from './functions/transformacoes/diminuir/DiminuirMenu';
 import { styles } from './styles/appStyles';
+
+const getCenteredPanelPosition = () => {
+  const panelWidth = 520;
+  const panelHeight = 520;
+  const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
+  const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
+  const x = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
+  const y = Math.min(Math.max((window.innerHeight - panelHeight) / 2, 16), maxY);
+
+  return { x, y };
+};
 
 export default function App() {
   const [openMenu, setOpenMenu] = useState(null);
@@ -11,14 +27,14 @@ export default function App() {
   const [hoverItem, setHoverItem] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [processedImage, setProcessedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [activeTool, setActiveTool] = useState(null);
-  const [panelPosition, setPanelPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
+  const [panelPosition, setPanelPosition] = useState(() => getCenteredPanelPosition());
   const [toast, setToast] = useState(null);
+  const currentImage = processedImage || selectedImage;
+  const displayImage = previewImage || processedImage || selectedImage;
   const fileInputRef = useRef(null);
   const toastTimeoutRef = useRef(null);
-  const toolPanelRef = useRef(null);
-  const dragStateRef = useRef({ active: false, offsetX: 0, offsetY: 0 });
 
   const showToast = (message) => {
     setToast(message);
@@ -55,6 +71,8 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = () => {
       setSelectedImage(reader.result);
+      setProcessedImage(null);
+      setPreviewImage(null);
       showToast(`Imagem carregada: ${file.name}`);
     };
     reader.readAsDataURL(file);
@@ -62,13 +80,15 @@ export default function App() {
   };
 
   const saveSelectedImage = () => {
-    if (!selectedImage) {
+    const imageToSave = displayImage || selectedImage;
+
+    if (!imageToSave) {
       showToast('Nenhuma imagem foi adicionada para salvar.');
       return;
     }
 
     const link = document.createElement('a');
-    link.href = selectedImage;
+    link.href = imageToSave;
     link.download = 'imagem-processada.png';
     document.body.appendChild(link);
     link.click();
@@ -85,17 +105,40 @@ export default function App() {
         saveSelectedImage();
         break;
       case 'Transladar':
-        if (!selectedImage) {
+        if (!currentImage) {
           showToast('Selecione uma imagem antes de aplicar a translação.');
           return;
         }
-        setProcessedImage(null);
         setActiveTool('transladar');
         break;
       case 'Rotacionar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a rotação.');
+          return;
+        }
+        setActiveTool('rotacionar');
+        break;
       case 'Espelhar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o espelhamento.');
+          return;
+        }
+        setActiveTool('espelhar');
+        break;
       case 'Aumentar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o aumento.');
+          return;
+        }
+        setActiveTool('aumentar');
+        break;
       case 'Diminuir':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a diminuição.');
+          return;
+        }
+        setActiveTool('diminuir');
+        break;
       case 'Grayscale':
       case 'Passa Baixa':
       case 'Passa Alta':
@@ -114,94 +157,45 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (activeTool !== 'transladar' || !selectedImage) {
-      return;
+
+  const normalizeImageSource = useCallback((resultCanvas) => {
+    if (!resultCanvas) {
+      return null;
     }
 
-    const panelWidth = toolPanelRef.current?.offsetWidth || 520;
-    const panelHeight = toolPanelRef.current?.offsetHeight || 520;
-    const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
-    const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
-    const initialX = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
-    const initialY = Math.min(Math.max((window.innerHeight - panelHeight) / 2, 16), maxY);
+    if (typeof resultCanvas.toDataURL === 'function') {
+      return resultCanvas.toDataURL('image/png');
+    }
 
-    setPanelPosition({ x: initialX, y: initialY });
-  }, [activeTool, selectedImage]);
-
-  useEffect(() => {
-    const handleMouseMove = (event) => {
-      if (!dragStateRef.current.active || !toolPanelRef.current) {
-        return;
-      }
-
-      const panelWidth = toolPanelRef.current.offsetWidth || 520;
-      const panelHeight = toolPanelRef.current.offsetHeight || 520;
-      const nextX = event.clientX - dragStateRef.current.offsetX;
-      const nextY = event.clientY - dragStateRef.current.offsetY;
-      const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
-      const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
-
-      setPanelPosition({
-        x: Math.min(Math.max(nextX, 16), maxX),
-        y: Math.min(Math.max(nextY, 16), maxY),
-      });
-    };
-
-    const handleMouseUp = () => {
-      dragStateRef.current.active = false;
-      setIsDragging(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
+    return resultCanvas;
   }, []);
 
-  const handleDragStart = (event) => {
-    if (!toolPanelRef.current) {
+  const handleProcessedImage = useCallback((resultCanvas) => {
+    const normalized = normalizeImageSource(resultCanvas);
+
+    if (!normalized) {
       return;
     }
 
-    const rect = toolPanelRef.current.getBoundingClientRect();
-    dragStateRef.current = {
-      active: true,
-      offsetX: event.clientX - rect.left,
-      offsetY: event.clientY - rect.top,
-    };
-    setIsDragging(true);
-    event.preventDefault();
-  };
-
-  const handleProcessedImage = (resultCanvas) => {
-    if (!resultCanvas) {
-      return;
-    }
-
-    if (typeof resultCanvas.toDataURL === 'function') {
-      setProcessedImage(resultCanvas.toDataURL('image/png'));
-    } else {
-      setProcessedImage(resultCanvas);
-    }
-
+    setProcessedImage(normalized);
+    setPreviewImage(null);
     setActiveTool(null);
-  };
+  }, [normalizeImageSource]);
 
-  const handlePreviewImage = (resultCanvas) => {
-    if (!resultCanvas) {
+  const handlePreviewImage = useCallback((resultCanvas) => {
+    const normalized = normalizeImageSource(resultCanvas);
+
+    if (!normalized) {
       return;
     }
 
-    if (typeof resultCanvas.toDataURL === 'function') {
-      setProcessedImage(resultCanvas.toDataURL('image/png'));
-    } else {
-      setProcessedImage(resultCanvas);
-    }
-  };
+    setPreviewImage(normalized);
+  }, [normalizeImageSource]);
+
+  const closeActiveTool = useCallback(() => {
+    setActiveTool(null);
+    setPreviewImage(null);
+  }, []);
 
   return (
     <div style={styles.container} onClick={() => setOpenMenu(null)}>
@@ -223,49 +217,89 @@ export default function App() {
         setHoverItem={setHoverItem}
         onMenuAction={handleMenuAction}
       />
-      {activeTool === 'transladar' && selectedImage && (
-        <div
-          ref={toolPanelRef}
-          style={{
-            ...styles.toolPanel,
-            left: `${panelPosition.x}px`,
-            top: `${panelPosition.y}px`,
-          }}
+      {activeTool === 'transladar' && currentImage && (
+        <DraggableToolPanel
+          title="Transladar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
         >
-          <div
-            style={{
-              ...styles.toolPanelHeader,
-              cursor: isDragging ? 'grabbing' : 'grab',
-            }}
-            onMouseDown={handleDragStart}
-          >
-            <span style={styles.toolPanelTitle}>Transladar imagem</span>
-            <button
-              type="button"
-              style={styles.closeButton}
-              onMouseDown={(event) => event.stopPropagation()}
-              onClick={() => setActiveTool(null)}
-            >
-              ✕
-            </button>
-          </div>
-          <div style={styles.toolPanelBody}>
-            <TransladarMenu
-              initialImageSrc={selectedImage}
-              onPreview={handlePreviewImage}
-              onProcessar={handleProcessedImage}
-              onClose={() => setActiveTool(null)}
-            />
-          </div>
-        </div>
+          <TransladarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'rotacionar' && currentImage && (
+        <DraggableToolPanel
+          title="Rotacionar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <RotacionarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'espelhar' && currentImage && (
+        <DraggableToolPanel
+          title="Espelhar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <EspelharMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'aumentar' && currentImage && (
+        <DraggableToolPanel
+          title="Aumentar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <AumentarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'diminuir' && currentImage && (
+        <DraggableToolPanel
+          title="Diminuir imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <DiminuirMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
       )}
 
       <MainContent
-        selectedImage={selectedImage}
-        transformedImage={processedImage}
-        activeTool={activeTool}
+        imageSrc={displayImage}
         onOpenFilePicker={openFilePicker}
-        onProcessImage={handleProcessedImage}
       />
     </div>
   );
