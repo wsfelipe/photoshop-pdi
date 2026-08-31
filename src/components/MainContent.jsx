@@ -19,9 +19,7 @@ export default function MainContent({ imageSrc, onOpenFilePicker }) {
               <div style={styles.placeholderIcon}>
                 <img width="75" height="auto" src="src/assets/file.png" alt="" />
               </div>
-              <p style={styles.placeholderText}>Clique em Arquivo</p>
-              <p style={styles.placeholderText}>→ Adicionar arquivo</p>
-              <p style={styles.placeholderSubtext}>ou clique nesta área</p>
+              <p style={styles.placeholderText}>Adicionar arquivo</p>
             </div>
           )}
         </div>
