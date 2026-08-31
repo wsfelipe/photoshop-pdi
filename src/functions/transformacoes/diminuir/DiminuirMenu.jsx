@@ -311,7 +311,7 @@ export default function DiminuirMenu({
           style={styles.button}
           onClick={handleApply}
         >
-          ✓ Aplicar
+          Aplicar
         </button>
 
         <button
@@ -322,18 +322,7 @@ export default function DiminuirMenu({
           }}
           onClick={handleReset}
         >
-          ↻ Resetar
-        </button>
-
-        <button
-          type="button"
-          style={{
-            ...styles.button,
-            ...styles.buttonSecondary,
-          }}
-          onClick={handleDownload}
-        >
-          ⬇ Baixar
+          Resetar
         </button>
       </div>
     </div>

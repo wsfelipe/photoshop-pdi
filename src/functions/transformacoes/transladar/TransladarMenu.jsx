@@ -232,6 +232,12 @@ export default function TransladarMenu({
     setStep(10);
   };
 
+  useEffect(() => {
+    return () => {
+      handleReset();
+    };
+  }, []);
+
   // Download
   const handleDownload = () => {
     if (!inputImage) {
@@ -392,7 +398,7 @@ export default function TransladarMenu({
           style={styles.button}
           onClick={handleTransladar}
         >
-          ✓ Aplicar
+          Aplicar
         </button>
 
         <button
@@ -402,19 +408,8 @@ export default function TransladarMenu({
           }}
           onClick={handleReset}
         >
-          ↻ Resetar
+          Resetar 
         </button>
-
-        <button
-          style={{
-            ...styles.button,
-            ...styles.buttonSecondary
-          }}
-          onClick={handleDownload}
-        >
-          ⬇ Baixar
-        </button>
-
       </div>
 
     </div>

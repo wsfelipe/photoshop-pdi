@@ -155,6 +155,12 @@ export default function EspelharMenu({
     setDirection('horizontal');
   };
 
+  useEffect(() => {
+    return () => {
+      handleReset();
+    };
+  }, []);
+
   const handleDownload = () => {
     if (!inputImage) {
       return;
@@ -236,7 +242,7 @@ export default function EspelharMenu({
           style={styles.button}
           onClick={handleApply}
         >
-          ✓ Aplicar
+          Aplicar
         </button>
 
         <button
@@ -247,18 +253,7 @@ export default function EspelharMenu({
           }}
           onClick={handleReset}
         >
-          ↻ Resetar
-        </button>
-
-        <button
-          type="button"
-          style={{
-            ...styles.button,
-            ...styles.buttonSecondary,
-          }}
-          onClick={handleDownload}
-        >
-          ⬇ Baixar
+          Resetar
         </button>
       </div>
     </div>

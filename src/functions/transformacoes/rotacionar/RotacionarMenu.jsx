@@ -177,6 +177,12 @@ export default function RotacionarMenu({
     setStep(15);
   };
 
+  useEffect(() => {
+    return () => {
+      handleReset();
+    };
+  }, []);
+
   const handleDownload = () => {
     if (!inputImage) {
       return;
@@ -264,7 +270,7 @@ export default function RotacionarMenu({
 
       <div style={styles.buttons}>
         <button type="button" style={styles.button} onClick={handleApply}>
-          ✓ Aplicar
+          Aplicar
         </button>
 
         <button
@@ -272,15 +278,7 @@ export default function RotacionarMenu({
           style={{ ...styles.button, ...styles.buttonSecondary }}
           onClick={handleReset}
         >
-          ↻ Resetar
-        </button>
-
-        <button
-          type="button"
-          style={{ ...styles.button, ...styles.buttonSecondary }}
-          onClick={handleDownload}
-        >
-          ⬇ Baixar
+          Resetar
         </button>
       </div>
     </div>

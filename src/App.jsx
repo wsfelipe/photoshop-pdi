@@ -192,6 +192,11 @@ export default function App() {
     setPreviewImage(normalized);
   }, [normalizeImageSource]);
 
+  const closeActiveTool = useCallback(() => {
+    setActiveTool(null);
+    setPreviewImage(null);
+  }, []);
+
   return (
     <div style={styles.container} onClick={() => setOpenMenu(null)}>
       {toast && <div style={styles.toast}>{toast}</div>}
@@ -217,13 +222,13 @@ export default function App() {
           title="Transladar imagem"
           initialPosition={panelPosition}
           onPositionChange={setPanelPosition}
-          onClose={() => setActiveTool(null)}
+          onClose={closeActiveTool}
         >
           <TransladarMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
-            onClose={() => setActiveTool(null)}
+            onClose={closeActiveTool}
           />
         </DraggableToolPanel>
       )}
@@ -233,13 +238,13 @@ export default function App() {
           title="Rotacionar imagem"
           initialPosition={panelPosition}
           onPositionChange={setPanelPosition}
-          onClose={() => setActiveTool(null)}
+          onClose={closeActiveTool}
         >
           <RotacionarMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
-            onClose={() => setActiveTool(null)}
+            onClose={closeActiveTool}
           />
         </DraggableToolPanel>
       )}
@@ -249,13 +254,13 @@ export default function App() {
           title="Espelhar imagem"
           initialPosition={panelPosition}
           onPositionChange={setPanelPosition}
-          onClose={() => setActiveTool(null)}
+          onClose={closeActiveTool}
         >
           <EspelharMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
-            onClose={() => setActiveTool(null)}
+            onClose={closeActiveTool}
           />
         </DraggableToolPanel>
       )}
@@ -265,13 +270,13 @@ export default function App() {
           title="Aumentar imagem"
           initialPosition={panelPosition}
           onPositionChange={setPanelPosition}
-          onClose={() => setActiveTool(null)}
+          onClose={closeActiveTool}
         >
           <AumentarMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
-            onClose={() => setActiveTool(null)}
+            onClose={closeActiveTool}
           />
         </DraggableToolPanel>
       )}
@@ -281,13 +286,13 @@ export default function App() {
           title="Diminuir imagem"
           initialPosition={panelPosition}
           onPositionChange={setPanelPosition}
-          onClose={() => setActiveTool(null)}
+          onClose={closeActiveTool}
         >
           <DiminuirMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
-            onClose={() => setActiveTool(null)}
+            onClose={closeActiveTool}
           />
         </DraggableToolPanel>
       )}
