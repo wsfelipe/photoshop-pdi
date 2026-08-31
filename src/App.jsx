@@ -5,6 +5,7 @@ import MainContent from './components/MainContent';
 import DraggableToolPanel from './components/DraggableToolPanel';
 import TransladarMenu from './functions/transformacoes/transladar/TransladarMenu';
 import RotacionarMenu from './functions/transformacoes/rotacionar/RotacionarMenu';
+import EspelharMenu from './functions/transformacoes/espelhar/EspelharMenu';
 import { styles } from './styles/appStyles';
 
 const getCenteredPanelPosition = () => {
@@ -114,6 +115,12 @@ export default function App() {
         setActiveTool('rotacionar');
         break;
       case 'Espelhar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o espelhamento.');
+          return;
+        }
+        setActiveTool('espelhar');
+        break;
       case 'Aumentar':
       case 'Diminuir':
       case 'Grayscale':
@@ -213,6 +220,22 @@ export default function App() {
           onClose={() => setActiveTool(null)}
         >
           <RotacionarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={() => setActiveTool(null)}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'espelhar' && currentImage && (
+        <DraggableToolPanel
+          title="Espelhar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={() => setActiveTool(null)}
+        >
+          <EspelharMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
