@@ -510,15 +510,6 @@ For each function, test with:
 
 ---
 
-## References
-
-- Digital Image Processing (Gonzalez & Woods)
-- Image Processing with Python: Algorithms and Applications
-- OpenCV Tutorials: https://docs.opencv.org/
-- MDN Canvas API: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API
-
----
-
 ## Author
 
 Felipe Wiebke Schons
@@ -528,4 +519,4 @@ Felipe Wiebke Schons
 **Course:** Digital Image Processing
 **Institution:** Universidade Feevale
 **Semester:** 2nd Semester, 2026
-**Version:** 1.0.0
+**Version:** 1.1.0
