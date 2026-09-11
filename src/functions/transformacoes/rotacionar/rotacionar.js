@@ -1,4 +1,4 @@
-export function rotacionar(image, angle = 0, fillColor = 'black') {
+export function rotacionar(image, angle = 0) {
   const radians = (angle * Math.PI) / 180;
 
   let sourceCanvas;
@@ -38,20 +38,6 @@ export function rotacionar(image, angle = 0, fillColor = 'black') {
   outputCanvas.width = rotatedWidth;
   outputCanvas.height = rotatedHeight;
   const outputCtx = outputCanvas.getContext('2d');
-
-  switch (fillColor) {
-    case 'white':
-      outputCtx.fillStyle = 'white';
-      outputCtx.fillRect(0, 0, rotatedWidth, rotatedHeight);
-      break;
-    case 'transparent':
-      break;
-    case 'black':
-    default:
-      outputCtx.fillStyle = 'black';
-      outputCtx.fillRect(0, 0, rotatedWidth, rotatedHeight);
-      break;
-  }
 
   outputCtx.translate(rotatedWidth / 2, rotatedHeight / 2);
   outputCtx.rotate(radians);
