@@ -1,7 +1,6 @@
 export function aumentar(
   image,
-  scale = 100,
-  fillColor = 'transparent'
+  scale = 100
 ) {
   let sourceCanvas;
   let width;
@@ -54,22 +53,6 @@ export function aumentar(
   outputCanvas.height = newHeight;
 
   const outputCtx = outputCanvas.getContext('2d');
-
-  switch (fillColor) {
-    case 'white':
-      outputCtx.fillStyle = 'white';
-      outputCtx.fillRect(0, 0, newWidth, newHeight);
-      break;
-
-    case 'transparent':
-      break;
-
-    case 'black':
-    default:
-      outputCtx.fillStyle = 'black';
-      outputCtx.fillRect(0, 0, newWidth, newHeight);
-      break;
-  }
 
   outputCtx.imageSmoothingEnabled = true;
   outputCtx.imageSmoothingQuality = 'high';

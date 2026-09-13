@@ -1,4 +1,4 @@
-export function espelhar(image, direction = 'horizontal', fillColor = 'transparent') {
+export function espelhar(image, direction = 'horizontal') {
   let sourceCanvas;
   let width;
   let height;
@@ -38,23 +38,6 @@ export function espelhar(image, direction = 'horizontal', fillColor = 'transpare
   outputCanvas.height = height;
 
   const outputCtx = outputCanvas.getContext('2d');
-
-  // Fundo
-  switch (fillColor) {
-    case 'white':
-      outputCtx.fillStyle = 'white';
-      outputCtx.fillRect(0, 0, width, height);
-      break;
-
-    case 'transparent':
-      break;
-
-    case 'black':
-    default:
-      outputCtx.fillStyle = 'black';
-      outputCtx.fillRect(0, 0, width, height);
-      break;
-  }
 
   if (direction === 'horizontal') {
     // Espelha esquerda <-> direita

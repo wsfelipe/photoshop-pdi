@@ -104,6 +104,15 @@ export default function App() {
       case 'Salvar arquivo':
         saveSelectedImage();
         break;
+      case 'Sobre':
+        showToast('Photoshop PDI - Versão 1.0.0');
+        break;
+      case 'Sair':
+        showToast('Saindo do aplicativo...');
+        setTimeout(() => {
+          window.close();
+        }, 1000);
+        break;
       case 'Transladar':
         if (!currentImage) {
           showToast('Selecione uma imagem antes de aplicar a translação.');
