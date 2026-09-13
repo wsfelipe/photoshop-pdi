@@ -519,4 +519,4 @@ Felipe Wiebke Schons
 **Course:** Digital Image Processing
 **Institution:** Universidade Feevale
 **Semester:** 2nd Semester, 2026
-**Version:** 1.1.0
+**Version:** 1.2.0

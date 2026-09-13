@@ -8,6 +8,10 @@ import RotacionarMenu from './functions/transformacoes/rotacionar/RotacionarMenu
 import EspelharMenu from './functions/transformacoes/espelhar/EspelharMenu';
 import AumentarMenu from './functions/transformacoes/aumentar/AumentarMenu';
 import DiminuirMenu from './functions/transformacoes/diminuir/DiminuirMenu';
+import GrayscaleMenu from './functions/filtros/grayscale/GrayscaleMenu';
+import PassaAltaMenu from './functions/filtros/passaalta/PassaAltaMenu';
+import PassaBaixaMenu from './functions/filtros/passabaixa/PassaBaixaMenu';
+import ThresholdMenu from './functions/filtros/threshold/ThresholdMenu';
 import { styles } from './styles/appStyles';
 
 const getCenteredPanelPosition = () => {
@@ -105,7 +109,7 @@ export default function App() {
         saveSelectedImage();
         break;
       case 'Sobre':
-        showToast('Photoshop PDI - Versão 1.0.0');
+        showToast('Photoshop PDI - Versão 1.2.0');
         break;
       case 'Sair':
         showToast('Saindo do aplicativo...');
@@ -149,9 +153,33 @@ export default function App() {
         setActiveTool('diminuir');
         break;
       case 'Grayscale':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a escala de cinza.');
+          return;
+        }
+        setActiveTool('grayscale');
+        break;
       case 'Passa Baixa':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a passa-baixa.');
+          return;
+        }
+        setActiveTool('passabaixa');
+        break;
       case 'Passa Alta':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a passa-alta.');
+          return;
+        }
+        setActiveTool('passaalta');
+        break;
       case 'Threshold':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o threshold.');
+          return;
+        }
+        setActiveTool('threshold');
+        break;
       case 'Dilatação':
       case 'Erosão':
       case 'Abertura':
@@ -298,6 +326,70 @@ export default function App() {
           onClose={closeActiveTool}
         >
           <DiminuirMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'grayscale' && currentImage && (
+        <DraggableToolPanel
+          title="Escala de cinza"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <GrayscaleMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'passaalta' && currentImage && (
+        <DraggableToolPanel
+          title="Passa-alta"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <PassaAltaMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'passabaixa' && currentImage && (
+        <DraggableToolPanel
+          title="Passa-baixa"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <PassaBaixaMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'threshold' && currentImage && (
+        <DraggableToolPanel
+          title="Threshold"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <ThresholdMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
