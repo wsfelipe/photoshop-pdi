@@ -1,522 +1,351 @@
-# Digital Image Processing System
-## Universidade Feevale - 2nd Semester 2026
+# Photoshop PDI
+## Universidade Feevale - 2º Semestre 2026
 
-Digital Image Processing System - A comprehensive web-based application developed for the Digital Image Processing course at Universidade Feevale (2nd semester 2026). This interactive platform enables students to explore and implement various image processing techniques including geometric transformations, filtering, mathematical morphology operations, and feature extraction. Built with React and designed with a modular architecture to facilitate learning and experimentation with digital image processing concepts.
-
----
-
-## Table of Contents
-
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Geometric Transformations](#geometric-transformations)
-- [Filters](#filters)
-- [Mathematical Morphology](#mathematical-morphology)
-- [Feature Extraction](#feature-extraction)
-- [Contributing](#contributing)
+Aplicativo web para processamento digital de imagens, construído com React. O projeto permite carregar uma imagem, aplicar transformações geométricas e filtros, visualizar o resultado e exportar a imagem processada.
 
 ---
 
-## Project Structure
+## Funcionalidades já implementadas
 
+As funções abaixo já estão presentes no projeto e acessíveis pela interface:
+
+### Transformações geométricas
+- `transladar` — desloca a imagem em X e Y
+- `rotacionar` — gira a imagem em torno do centro
+- `espelhar` — espelha horizontal ou verticalmente
+- `aumentar` — amplia a imagem por escala
+- `diminuir` — reduz a imagem por escala
+
+### Filtros
+- `grayscale` — converte imagem para tons de cinza
+- `passaBaixa` — aplica suavização por média local
+- `passaAlta` — realça bordas e detalhes
+- `threshold` — binariza a imagem por limiar
+
+### Arquivos principais
+- `src/functions/transformacoes/transladar/transladar.js`
+- `src/functions/transformacoes/rotacionar/rotacionar.js`
+- `src/functions/transformacoes/espelhar/espelhar.js`
+- `src/functions/transformacoes/aumentar/aumentar.js`
+- `src/functions/transformacoes/diminuir/diminuir.js`
+- `src/functions/filtros/grayscale/grayscale.js`
+- `src/functions/filtros/passabaixa/passaBaixa.js`
+- `src/functions/filtros/passaalta/passaAlta.js`
+- `src/functions/filtros/threshold/threshold.js`
+
+---
+
+## Estrutura do projeto
+
+```bash
+photoshop-pdi/
+├── public/
+├── src/
+│   ├── components/
+│   ├── functions/
+│   │   ├── filtros/
+│   │   │   ├── grayscale/
+│   │   │   ├── passaalta/
+│   │   │   ├── passabaixa/
+│   │   │   └── threshold/
+│   │   └── transformacoes/
+│   │       ├── aumentar/
+│   │       ├── diminuir/
+│   │       ├── espelhar/
+│   │       ├── rotacionar/
+│   │       └── transladar/
+│   ├── menus/
+│   ├── styles/
+│   ├── App.jsx
+│   └── main.jsx
+├── index.html
+├── package.json
+├── vite.config.js
+├── eslint.config.js
+├── README.md
+└── .gitignore
 ```
-src/
-├── components/              # UI Components
-├── menus/                   # Menu system
-├── styles/                  # Application styles
-├── transformacoes/          # Geometric transformation functions
-├── filtros/                 # Filter functions
-├── morfologia/              # Morphological operations
-└── funcoes/                 # Utility functions
+
+---
+
+## Como executar
+
+1. Clone o repositório
+2. Instale as dependências:
+
+```bash
+npm install
+```
+
+3. Inicie o projeto:
+
+```bash
+npm run dev
+```
+
+4. Acesse a aplicação no navegador em:
+
+```bash
+http://localhost:5173
 ```
 
 ---
 
-## Installation
+## Function Documentation
 
-1. Clone the repository
-2. Run `npm install`
-3. Run `npm run dev`
-4. Open `http://localhost:5173`
+### 1. Transladar
+
+**Arquivo:** `src/functions/transformacoes/transladar/transladar.js`
+
+**Descrição:**
+Desloca a imagem em um deslocamento específico nos eixos X e Y.
+
+**Assinatura:**
+```javascript
+export function transladar(image, deltaX, deltaY)
+```
+
+**Parâmetros:**
+- `image`: `HTMLCanvasElement`, `ImageData` ou `HTMLImageElement`
+- `deltaX`: deslocamento horizontal
+- `deltaY`: deslocamento vertical
+
+**Retorno:**
+- `Canvas` com a imagem deslocada
 
 ---
 
-# Function Documentation
+### 2. Rotacionar
 
-## Geometric Transformations (Transformações Geométricas)
+**Arquivo:** `src/functions/transformacoes/rotacionar/rotacionar.js`
 
-### 1. Translation (Transladar)
+**Descrição:**
+Gira a imagem em um ângulo informado, preservando a proporção da imagem e ajustando o tamanho do canvas de saída.
 
-**File:** `src/transformacoes/transladar.js`
+**Assinatura:**
+```javascript
+export function rotacionar(image, angle = 0)
+```
 
-**Description:**
-Translates an image by moving all pixels by a specified offset in the X and Y directions.
+**Parâmetros:**
+- `image`: entrada da imagem
+- `angle`: ângulo em graus
 
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `deltaX`: Horizontal displacement (pixels)
-- `deltaY`: Vertical displacement (pixels)
+**Retorno:**
+- `Canvas` rotacionado
 
-**Expected Output:**
-An image shifted by the given offsets. Areas outside the original image boundaries should be handled (padding with black or wraparound).
+---
 
-**Implementation:**
+### 3. Espelhar
+
+**Arquivo:** `src/functions/transformacoes/espelhar/espelhar.js`
+
+**Descrição:**
+Espelha a imagem em sentido horizontal ou vertical.
+
+**Assinatura:**
+```javascript
+export function espelhar(image, direction = 'horizontal')
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+- `direction`: `'horizontal'` ou `'vertical'`
+
+**Retorno:**
+- `Canvas` espelhado
+
+---
+
+### 4. Aumentar
+
+**Arquivo:** `src/functions/transformacoes/aumentar/aumentar.js`
+
+**Descrição:**
+Amplia a imagem por uma escala percentual, preservando qualidade via interpolação do canvas.
+
+**Assinatura:**
+```javascript
+export function aumentar(image, scale = 100)
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+- `scale`: porcentagem de ampliação, ex.: `200` para 2x
+
+**Retorno:**
+- `Canvas` ampliado
+
+---
+
+### 5. Diminuir
+
+**Arquivo:** `src/functions/transformacoes/diminuir/diminuir.js`
+
+**Descrição:**
+Reduz a imagem para uma escala percentual, ajustando largura e altura do resultado.
+
+**Assinatura:**
+```javascript
+export function diminuir(image, scale = 100)
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+- `scale`: porcentagem de redução, ex.: `50` para metade do tamanho
+
+**Retorno:**
+- `Canvas` reduzido
+
+---
+
+### 6. Grayscale
+
+**Arquivo:** `src/functions/filtros/grayscale/grayscale.js`
+
+**Descrição:**
+Converte a imagem para tons de cinza utilizando a fórmula luminância.
+
+**Assinatura:**
+```javascript
+export function grayscale(image)
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+
+**Retorno:**
+- `Canvas` em escala de cinza
+
+---
+
+### 7. Passa Baixa
+
+**Arquivo:** `src/functions/filtros/passabaixa/passaBaixa.js`
+
+**Descrição:**
+Aplica suavização por média local usando um kernel 3x3 para reduzir ruído e detalhes de alta frequência.
+
+**Assinatura:**
+```javascript
+export function passaBaixa(image)
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+
+**Retorno:**
+- `Canvas` com efeito de blur suave
+
+---
+
+### 8. Passa Alta
+
+**Arquivo:** `src/functions/filtros/passaalta/passaAlta.js`
+
+**Descrição:**
+Realça bordas e detalhes através de um kernel de alta passagem.
+
+**Assinatura:**
+```javascript
+export function passaAlta(image)
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+
+**Retorno:**
+- `Canvas` com realce de bordas
+
+---
+
+### 9. Threshold
+
+**Arquivo:** `src/functions/filtros/threshold/threshold.js`
+
+**Descrição:**
+Binariza a imagem usando um valor de limiar, convertendo pixels acima do limite para branco e abaixo para preto.
+
+**Assinatura:**
+```javascript
+export function threshold(image, value = 128)
+```
+
+**Parâmetros:**
+- `image`: imagem de entrada
+- `value`: valor de limiar, de `0` a `255`
+
+**Retorno:**
+- `Canvas` binarizado
+
+---
+
+## Funcionalidades em desenvolvimento
+
+As operações abaixo ainda não foram implementadas no projeto, mas já estão previstas para evolução do sistema:
 
 ```javascript
-export function transladar(image, deltaX, deltaY) {
-  // TODO: Implement translation function
-  // - Extract image data
-  // - Create new canvas with translated content
-  // - Handle boundary conditions
-  // - Return processed image
-}
+// Dilatação
+// export function dilatacao(image, kernelSize = 3) {
+//   // Aplicar operação morfológica de dilatação
+//   // Expandir regiões brancas da imagem
+//   // Retornar imagem processada
+// }
+
+// Erosão
+// export function erosao(image, kernelSize = 3) {
+//   // Aplicar operação morfológica de erosão
+//   // Reduzir regiões brancas da imagem
+//   // Retornar imagem processada
+// }
+
+// Abertura
+// export function abertura(image, kernelSize = 3) {
+//   // Aplicar erosão seguida de dilatação
+//   // Remover pequenos objetos
+//   // Retornar resultado final
+// }
+
+// Fechamento
+// export function fechamento(image, kernelSize = 3) {
+//   // Aplicar dilatação seguida de erosão
+//   // Preencher pequenos buracos
+//   // Retornar resultado final
+// }
+
+// Afinamento
+// export function afinamento(image) {
+//   // Reduzir objetos à estrutura esquelética
+//   // Preservar conectividade
+//   // Retornar imagem afinada
+// }
 ```
 
 ---
 
-### 2. Rotation (Rotacionar)
+## Observações
 
-**File:** `src/transformacoes/rotacionar.js`
-
-**Description:**
-Rotates an image by a specified angle (in degrees) around its center.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `angle`: Rotation angle in degrees (0-360)
-
-**Expected Output:**
-An image rotated by the specified angle. Consider interpolation methods for anti-aliasing.
-
-**Implementation:**
-
-```javascript
-export function rotacionar(image, angle) {
-  // TODO: Implement rotation function
-  // - Convert angle to radians
-  // - Calculate transformation matrix
-  // - Apply bilinear or bicubic interpolation
-  // - Return rotated image
-}
-```
+- A interface atual contempla as operações já desenvolvidas em `src/App.jsx` e no menu de ferramentas.
+- O sistema foi pensado em módulos para facilitar a expansão de novos filtros e transformações.
+- A exportação da imagem processada é feita diretamente pelo navegador após a edição.
 
 ---
 
-### 3. Mirroring/Flip (Espelhar)
+## Observações finais
 
-**File:** `src/transformacoes/espelhar.js`
-
-**Description:**
-Mirrors an image horizontally (flip left-right) or vertically (flip top-bottom).
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `direction`: "horizontal" or "vertical"
-
-**Expected Output:**
-A mirrored version of the input image.
-
-**Implementation:**
-
-```javascript
-export function espelhar(image, direction) {
-  // TODO: Implement mirroring function
-  // - Support both horizontal and vertical flipping
-  // - Reverse pixel order according to direction
-  // - Return mirrored image
-}
-```
+- O projeto está em fase de desenvolvimento prático de processamento digital de imagens.
+- A estrutura está organizada por módulos para facilitar a expansão futura.
+- As operações atuais já estão integradas à interface e funcionando na aplicação.
 
 ---
 
-### 4. Zoom In (Aumentar)
-
-**File:** `src/transformacoes/aumentar.js`
-
-**Description:**
-Enlarges an image by a specified scale factor using interpolation.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `scaleFactor`: Enlargement factor (e.g., 2.0 for 2x zoom)
-
-**Expected Output:**
-An enlarged image with the specified scale factor.
-
-**Implementation:**
-
-```javascript
-export function aumentar(image, scaleFactor) {
-  // TODO: Implement zoom in function
-  // - Calculate new dimensions
-  // - Apply interpolation (nearest neighbor or bilinear)
-  // - Resize image
-  // - Return enlarged image
-}
-```
-
----
-
-### 5. Zoom Out (Diminuir)
-
-**File:** `src/transformacoes/diminuir.js`
-
-**Description:**
-Reduces an image size by a specified scale factor.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `scaleFactor`: Reduction factor (e.g., 0.5 for 50% zoom)
-
-**Expected Output:**
-A reduced image with the specified scale factor.
-
-**Implementation:**
-
-```javascript
-export function diminuir(image, scaleFactor) {
-  // TODO: Implement zoom out function
-  // - Calculate new dimensions
-  // - Apply downsampling technique
-  // - Return reduced image
-}
-```
-
----
-
-## Filters (Filtros)
-
-### 1. Grayscale
-
-**File:** `src/filtros/grayscale.js`
-
-**Description:**
-Converts a color image to grayscale using the luminosity method or average method.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `method`: "luminosity" or "average" (optional, default: "luminosity")
-
-**Expected Output:**
-A grayscale version of the input image.
-
-**Implementation:**
-
-```javascript
-export function grayscale(image, method = "luminosity") {
-  // TODO: Implement grayscale conversion
-  // - Luminosity method: 0.299*R + 0.587*G + 0.114*B
-  // - Average method: (R + G + B) / 3
-  // - Apply to all pixels
-  // - Return grayscale image
-}
-```
-
----
-
-### 2. Low Pass Filter (Passa Baixa)
-
-**File:** `src/filtros/passaBaixa.js`
-
-**Description:**
-Applies a low pass filter to blur/smooth the image by removing high-frequency components.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `kernelSize`: Size of the convolution kernel (3, 5, 7, etc.)
-
-**Expected Output:**
-A blurred/smoothed version of the input image.
-
-**Implementation:**
-
-```javascript
-export function passaBaixa(image, kernelSize = 5) {
-  // TODO: Implement low pass filter
-  // - Create averaging kernel
-  // - Apply convolution
-  // - Handle image boundaries
-  // - Return filtered image
-}
-```
-
----
-
-### 3. High Pass Filter (Passa Alta)
-
-**File:** `src/filtros/passaAlta.js`
-
-**Description:**
-Applies a high pass filter to enhance edges and details by removing low-frequency components.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas)
-- `kernelSize`: Size of the convolution kernel (3, 5, 7, etc.)
-
-**Expected Output:**
-An edge-enhanced version of the input image.
-
-**Implementation:**
-
-```javascript
-export function passaAlta(image, kernelSize = 3) {
-  // TODO: Implement high pass filter
-  // - Create edge detection kernel
-  // - Apply convolution (e.g., Sobel, Laplacian)
-  // - Handle boundaries
-  // - Return filtered image
-}
-```
-
----
-
-### 4. Threshold
-
-**File:** `src/filtros/threshold.js`
-
-**Description:**
-Converts a grayscale image to binary (black and white) based on a threshold value.
-
-**Parameters:**
-- `image`: Input image (ImageData or Canvas, preferably grayscale)
-- `thresholdValue`: Threshold intensity (0-255)
-
-**Expected Output:**
-A binary image where pixels below threshold are black (0) and above are white (255).
-
-**Implementation:**
-
-```javascript
-export function threshold(image, thresholdValue = 128) {
-  // TODO: Implement threshold function
-  // - For each pixel, check intensity against threshold
-  // - Set to 0 (black) if below threshold
-  // - Set to 255 (white) if above threshold
-  // - Return binary image
-}
-```
-
----
-
-## Mathematical Morphology (Morfologia Matemática)
-
-### 1. Dilation (Dilatação)
-
-**File:** `src/morfologia/dilatacao.js`
-
-**Description:**
-Applies morphological dilation using a structuring element. Expands white regions in the image.
-
-**Parameters:**
-- `image`: Input binary image (ImageData or Canvas)
-- `kernelSize`: Size of the structuring element (3, 5, 7, etc.)
-
-**Expected Output:**
-A dilated image where white regions are expanded.
-
-**Implementation:**
-
-```javascript
-export function dilatacao(image, kernelSize = 3) {
-  // TODO: Implement dilation
-  // - Create structuring element
-  // - For each pixel, check if any kernel element overlaps white region
-  // - Set output pixel to white if overlap detected
-  // - Return dilated image
-}
-```
-
----
-
-### 2. Erosion (Erosão)
-
-**File:** `src/morfologia/erosao.js`
-
-**Description:**
-Applies morphological erosion using a structuring element. Shrinks white regions in the image.
-
-**Parameters:**
-- `image`: Input binary image (ImageData or Canvas)
-- `kernelSize`: Size of the structuring element (3, 5, 7, etc.)
-
-**Expected Output:**
-An eroded image where white regions are shrunk.
-
-**Implementation:**
-
-```javascript
-export function erosao(image, kernelSize = 3) {
-  // TODO: Implement erosion
-  // - Create structuring element
-  // - For each pixel, check if all kernel elements are white
-  // - Set output to white only if entire kernel is white
-  // - Return eroded image
-}
-```
-
----
-
-### 3. Opening (Abertura)
-
-**File:** `src/morfologia/abertura.js`
-
-**Description:**
-Applies opening (erosion followed by dilation) to remove small objects while preserving large ones.
-
-**Parameters:**
-- `image`: Input binary image (ImageData or Canvas)
-- `kernelSize`: Size of the structuring element (3, 5, 7, etc.)
-
-**Expected Output:**
-An opened image with small objects removed.
-
-**Implementation:**
-
-```javascript
-export function abertura(image, kernelSize = 3) {
-  // TODO: Implement opening
-  // - Apply erosion
-  // - Apply dilation to the result
-  // - Return opened image
-}
-```
-
----
-
-### 4. Closing (Fechamento)
-
-**File:** `src/morfologia/fechamento.js`
-
-**Description:**
-Applies closing (dilation followed by erosion) to fill small holes while preserving large structures.
-
-**Parameters:**
-- `image`: Input binary image (ImageData or Canvas)
-- `kernelSize`: Size of the structuring element (3, 5, 7, etc.)
-
-**Expected Output:**
-A closed image with small holes filled.
-
-**Implementation:**
-
-```javascript
-export function fechamento(image, kernelSize = 3) {
-  // TODO: Implement closing
-  // - Apply dilation
-  // - Apply erosion to the result
-  // - Return closed image
-}
-```
-
----
-
-### 5. Thinning (Afinamento)
-
-**File:** `src/morfologia/afinamento.js`
-
-**Description:**
-Applies thinning (skeletonization) to reduce objects to their skeletal structure while preserving connectivity.
-
-**Parameters:**
-- `image`: Input binary image (ImageData or Canvas)
-
-**Expected Output:**
-A thinned image representing the skeleton of objects.
-
-**Implementation:**
-
-```javascript
-export function afinamento(image) {
-  // TODO: Implement thinning
-  // - Apply iterative thinning algorithm (Zhang-Suen or similar)
-  // - Preserve connectivity
-  // - Continue until no more pixels can be removed
-  // - Return thinned image
-}
-```
-
----
-
-## Feature Extraction (Extração de Características)
-
-### Challenge (DESAFIO)
-
-**File:** `src/caracteristicas/desafio.js`
-
-**Description:**
-[To be defined by instructor - Feature extraction challenge for students]
-
-**Parameters:**
-- `image`: Input image
-
-**Expected Output:**
-[To be defined]
-
-**Implementation:**
-
-```javascript
-export function desafio(image) {
-  // TODO: Implement challenge function
-  // [Instructions to be provided by instructor]
-}
-```
-
----
-
-## Utility Functions
-
-### Canvas/ImageData Helper Functions
-
-**File:** `src/funcoes/utils.js`
-
-Create utility functions for common operations:
-
-```javascript
-// Convert Canvas to ImageData
-export function canvasToImageData(canvas) {
-  // TODO: Implement
-}
-
-// Convert ImageData to Canvas
-export function imageDataToCanvas(imageData) {
-  // TODO: Implement
-}
-
-// Get pixel at position
-export function getPixel(imageData, x, y) {
-  // TODO: Implement
-}
-
-// Set pixel at position
-export function setPixel(imageData, x, y, r, g, b, a) {
-  // TODO: Implement
-}
-
-// Apply convolution
-export function convolve(imageData, kernel) {
-  // TODO: Implement
-}
-```
-
----
-
-## Testing & Validation
-
-For each function, test with:
-- Small test images (8x8, 16x16)
-- Real photographs
-- Edge cases (solid color, gradient)
-- Boundary conditions
-
----
-
-## Author
+## Autor
 
 Felipe Wiebke Schons
 
 ---
 
-**Course:** Digital Image Processing
-**Institution:** Universidade Feevale
-**Semester:** 2nd Semester, 2026
-**Version:** 1.2.0
+**Curso:** Processamento Digital de Imagens
+**Instituição:** Universidade Feevale
+**Semestre:** 2º semestre de 2026
+**Versão:** 1.2.0
