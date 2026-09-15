@@ -18,9 +18,25 @@ As funções abaixo já estão presentes no projeto e acessíveis pela interface
 
 ### Filtros
 - `grayscale` — converte imagem para tons de cinza
-- `passaBaixa` — aplica suavização por média local
-- `passaAlta` — realça bordas e detalhes
+- `passaBaixa` — aplica suavização por filtros de baixa frequência
+- `passaAlta` — realça bordas e detalhes por operadores de alta frequência
 - `threshold` — binariza a imagem por limiar
+
+### Passa baixa implementada
+- `Média` — suavização por média local
+- `Moda` — substitui pelo valor mais frequente no vizinho
+- `Mediana` — remove ruído sal e pimenta
+- `Gaussiana` — suavização por kernel gaussiano
+
+### Passa alta implementada
+- `Roberts` — detecção de bordas diagonais
+- `Sobel` — gradiente horizontal e vertical
+- `Prewitt` — detecção por gradiente simples
+- `Kirsch` — 8 máscaras direcionais
+- `Robinson` — 8 máscaras direcionais
+- `Marr-Hildreth (LoG)` — laplaciana da gaussiana
+- `Canny` — detecção de bordas por limiar
+- `Laplaciano` — realce por segunda derivada
 
 ### Arquivos principais
 - `src/functions/transformacoes/transladar/transladar.js`
@@ -224,7 +240,12 @@ export function grayscale(image)
 **Arquivo:** `src/functions/filtros/passabaixa/passaBaixa.js`
 
 **Descrição:**
-Aplica suavização por média local usando um kernel 3x3 para reduzir ruído e detalhes de alta frequência.
+Suaviza a imagem por filtros de baixa frequência. Os métodos disponíveis são:
+
+- `passaBaixaMedia` — média local
+- `passaBaixaModa` — valor mais frequente no vizinho
+- `passaBaixaMediana` — mediana do vizinho
+- `passaBaixaGaussiana` — suavização gaussiana
 
 **Assinatura:**
 ```javascript
@@ -235,7 +256,7 @@ export function passaBaixa(image)
 - `image`: imagem de entrada
 
 **Retorno:**
-- `Canvas` com efeito de blur suave
+- `Canvas` com suavização
 
 ---
 
@@ -244,7 +265,16 @@ export function passaBaixa(image)
 **Arquivo:** `src/functions/filtros/passaalta/passaAlta.js`
 
 **Descrição:**
-Realça bordas e detalhes através de um kernel de alta passagem.
+Realça bordas e detalhes usando operadores de alta frequência. Os métodos disponíveis são:
+
+- `passaAltaRoberts`
+- `passaAltaSobel`
+- `passaAltaPrewitt`
+- `passaAltaKirsch`
+- `passaAltaRobinson`
+- `passaAltaLoG`
+- `passaAltaCanny`
+- `passaAltaLaplaciano`
 
 **Assinatura:**
 ```javascript
