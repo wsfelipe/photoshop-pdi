@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react';
-import { passaAlta } from './passaalta';
+import {
+  passaAltaRoberts,
+  passaAltaSobel,
+  passaAltaPrewitt,
+  passaAltaKirsch,
+  passaAltaRobinson,
+  passaAltaLoG,
+  passaAltaCanny,
+  passaAltaLaplaciano,
+} from './passaAlta';
 
 const styles = {
   container: {
@@ -9,7 +18,7 @@ const styles = {
     color: '#fff',
     fontFamily: 'Segoe UI, sans-serif',
     width: '100%',
-    maxWidth: '600px',
+    maxWidth: '700px',
     boxSizing: 'border-box',
   },
 
@@ -23,30 +32,44 @@ const styles = {
     marginBottom: '10px',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
+    fontWeight: '600',
   },
 
-  optionButton: {
-    width: '100%',
-    padding: '14px',
-    backgroundColor: '#1f6feb',
-    border: '1px solid #1f6feb',
-    color: '#fff',
-    borderRadius: '6px',
-    fontSize: '14px',
-    cursor: 'default',
-    boxSizing: 'border-box',
+  methodsGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '8px',
+    marginBottom: '12px',
   },
 
-  icon: {
-    fontSize: '24px',
-    display: 'block',
-    marginBottom: '6px',
-  },
-
-  description: {
-    fontSize: '11px',
+  methodButton: {
+    padding: '12px',
+    backgroundColor: '#2d2d2d',
+    border: '1px solid #444',
     color: '#ddd',
-    marginTop: '4px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    textAlign: 'center',
+  },
+
+  methodButtonActive: {
+    backgroundColor: '#1f6feb',
+    borderColor: '#1f6feb',
+    color: '#fff',
+    fontWeight: '600',
+  },
+
+  methodButtonHover: {
+    backgroundColor: '#3d3d3d',
+    borderColor: '#555',
+  },
+
+  methodName: {
+    fontWeight: '600',
+    marginBottom: '4px',
+    fontSize: '13px',
   },
 
   current: {
@@ -54,6 +77,9 @@ const styles = {
     color: '#888',
     textAlign: 'center',
     marginTop: '12px',
+    padding: '10px',
+    backgroundColor: '#2a2a2a',
+    borderRadius: '4px',
   },
 
   buttons: {
@@ -72,12 +98,56 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '500',
+    transition: 'all 0.2s ease',
   },
 
   buttonSecondary: {
     backgroundColor: '#444',
   },
 };
+
+const METHODS = [
+  {
+    id: 'roberts',
+    name: 'Roberts',
+    func: passaAltaRoberts,
+  },
+  {
+    id: 'sobel',
+    name: 'Sobel',
+    func: passaAltaSobel,
+  },
+  {
+    id: 'prewitt',
+    name: 'Prewitt',
+    func: passaAltaPrewitt,
+  },
+  {
+    id: 'kirsch',
+    name: 'Kirsch',
+    func: passaAltaKirsch,
+  },
+  {
+    id: 'robinson',
+    name: 'Robinson',
+    func: passaAltaRobinson,
+  },
+  {
+    id: 'log',
+    name: 'Marr-Hildreth (LoG)',
+    func: passaAltaLoG,
+  },
+  {
+    id: 'canny',
+    name: 'Canny',
+    func: passaAltaCanny,
+  },
+  {
+    id: 'laplaciano',
+    name: 'Laplaciano',
+    func: passaAltaLaplaciano,
+  },
+];
 
 export default function PassaAltaMenu({
   onPreview,
@@ -86,6 +156,9 @@ export default function PassaAltaMenu({
   onClose,
 }) {
   const [inputImage, setInputImage] = useState(null);
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [hoveredMethod, setHoveredMethod] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (!initialImageSrc) {
@@ -102,16 +175,28 @@ export default function PassaAltaMenu({
   }, [initialImageSrc]);
 
   useEffect(() => {
-    if (!inputImage) {
+    if (!inputImage || !selectedMethod) {
       return;
     }
 
-    const resultCanvas = passaAlta(inputImage);
+    setIsProcessing(true);
 
-    if (onPreview) {
-      onPreview(resultCanvas);
-    }
-  }, [inputImage, onPreview]);
+    setTimeout(() => {
+      const method = METHODS.find(m => m.id === selectedMethod);
+      if (!method) {
+        setIsProcessing(false);
+        return;
+      }
+
+      const resultCanvas = method.func(inputImage);
+
+      if (onPreview) {
+        onPreview(resultCanvas);
+      }
+
+      setIsProcessing(false);
+    }, 10);
+  }, [inputImage, selectedMethod, onPreview]);
 
   const handleApply = () => {
     if (!inputImage) {
@@ -119,7 +204,13 @@ export default function PassaAltaMenu({
       return;
     }
 
-    const resultCanvas = passaAlta(inputImage);
+    if (!selectedMethod) {
+      alert('Selecione um método antes de aplicar.');
+      return;
+    }
+
+    const method = METHODS.find(m => m.id === selectedMethod);
+    const resultCanvas = method.func(inputImage);
 
     if (onProcessar) {
       onProcessar(resultCanvas);
@@ -136,25 +227,45 @@ export default function PassaAltaMenu({
     }
   };
 
+  const currentMethod = METHODS.find(m => m.id === selectedMethod);
+
   return (
     <div style={styles.container}>
       <div style={styles.section}>
         <div style={styles.sectionTitle}>
-          Filtro
+          Métodos de Passa Alta ({METHODS.length})
         </div>
 
-        <div style={styles.optionButton}>
-          <span style={styles.icon}>✦</span>
-
-          Passa Alta
-
-          <div style={styles.description}>
-            Realça bordas e detalhes
-          </div>
+        <div style={styles.methodsGrid}>
+          {METHODS.map(method => (
+            <button
+              key={method.id}
+              type="button"
+              disabled={isProcessing}
+              style={{
+                ...styles.methodButton,
+                ...(selectedMethod === method.id && styles.methodButtonActive),
+                ...(hoveredMethod === method.id && selectedMethod !== method.id && styles.methodButtonHover),
+                opacity: isProcessing ? 0.6 : 1,
+              }}
+              onClick={() => setSelectedMethod(method.id)}
+              onMouseEnter={() => setHoveredMethod(method.id)}
+              onMouseLeave={() => setHoveredMethod(null)}
+            >
+              <div style={styles.methodName}>
+                {method.name}
+              </div>
+            </button>
+          ))}
         </div>
 
         <div style={styles.current}>
-          Filtro atual: Passa Alta
+          Método selecionado: <strong>{currentMethod ? currentMethod.name : 'Nenhum'}</strong>
+          <br />
+          <span style={{ fontSize: '11px', color: '#666' }}>
+            {currentMethod ? currentMethod.description : 'Escolha um método para visualizar o resultado.'}
+            {isProcessing && ' (processando...)'}
+          </span>
         </div>
       </div>
 
@@ -163,6 +274,7 @@ export default function PassaAltaMenu({
           type="button"
           style={styles.button}
           onClick={handleApply}
+          disabled={isProcessing}
         >
           Aplicar
         </button>
@@ -174,6 +286,7 @@ export default function PassaAltaMenu({
             ...styles.buttonSecondary,
           }}
           onClick={handleReset}
+          disabled={isProcessing}
         >
           Resetar
         </button>
