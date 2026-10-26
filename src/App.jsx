@@ -2,7 +2,22 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import MenuBar from './components/MenuBar';
 import MainContent from './components/MainContent';
-import StatusBar from './components/StatusBar';
+import DraggableToolPanel from './components/DraggableToolPanel';
+import TransladarMenu from './functions/transformacoes/transladar/TransladarMenu';
+import RotacionarMenu from './functions/transformacoes/rotacionar/RotacionarMenu';
+import EspelharMenu from './functions/transformacoes/espelhar/EspelharMenu';
+import AumentarMenu from './functions/transformacoes/aumentar/AumentarMenu';
+import DiminuirMenu from './functions/transformacoes/diminuir/DiminuirMenu';
+import GrayscaleMenu from './functions/filtros/grayscale/GrayscaleMenu';
+import PassaAltaMenu from './functions/filtros/passaalta/PassaAltaMenu';
+import PassaBaixaMenu from './functions/filtros/passabaixa/PassaBaixaMenu';
+import ThresholdMenu from './functions/filtros/threshold/ThresholdMenu';
+import MorfologiaMenu from './functions/morfologia/MorfologiaMenu';
+import DilatacaoMenu from './functions/morfologia/dilatacao/DilatacaoMenu';
+import ErodacaoMenu from './functions/morfologia/erodacao/ErodacaoMenu';
+import AberturaMenu from './functions/morfologia/abertura/AberturaMenu';
+import FechamentoMenu from './functions/morfologia/fechamento/FechamentoMenu';
+import AfinamentoMenu from './functions/morfologia/afinamento/AfinamentoMenu';
 import { styles } from './styles/appStyles';
 
 export default function App() {
@@ -11,8 +26,202 @@ export default function App() {
   const [hoverItem, setHoverItem] = useState(null);
 
   const toggleMenu = (menu) => {
-    setOpenMenu(openMenu === menu ? null : menu);
+    setOpenMenu((current) => (current === menu ? null : menu));
   };
+
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelection = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Arquivo inválido. Selecione uma imagem.');
+      event.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result);
+      setProcessedImage(null);
+      setPreviewImage(null);
+      showToast(`Imagem carregada: ${file.name}`);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
+  const saveSelectedImage = () => {
+    const imageToSave = displayImage || selectedImage;
+
+    if (!imageToSave) {
+      showToast('Nenhuma imagem foi adicionada para salvar.');
+      return;
+    }
+
+    const link = document.createElement('a');
+    link.href = imageToSave;
+    link.download = 'imagem-processada.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Arquivo salvo com sucesso.');
+  };
+
+  const handleMenuAction = (item) => {
+    switch (item) {
+      case 'Adicionar arquivo':
+        openFilePicker();
+        break;
+      case 'Salvar arquivo':
+        saveSelectedImage();
+        break;
+      case 'Sobre':
+        showToast('Photoshop PDI - Versão 1.2.0');
+        break;
+      case 'Sair':
+        showToast('Saindo do aplicativo...');
+        setTimeout(() => {
+          window.close();
+        }, 1000);
+        break;
+      case 'Transladar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a translação.');
+          return;
+        }
+        setActiveTool('transladar');
+        break;
+      case 'Rotacionar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a rotação.');
+          return;
+        }
+        setActiveTool('rotacionar');
+        break;
+      case 'Espelhar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o espelhamento.');
+          return;
+        }
+        setActiveTool('espelhar');
+        break;
+      case 'Aumentar':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o aumento.');
+          return;
+        }
+        setActiveTool('aumentar');
+        break;
+      case 'Diminuir':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a diminuição.');
+          return;
+        }
+        setActiveTool('diminuir');
+        break;
+      case 'Grayscale':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a escala de cinza.');
+          return;
+        }
+        setActiveTool('grayscale');
+        break;
+      case 'Passa Baixa':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a passa-baixa.');
+          return;
+        }
+        setActiveTool('passabaixa');
+        break;
+      case 'Passa Alta':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a passa-alta.');
+          return;
+        }
+        setActiveTool('passaalta');
+        break;
+      case 'Threshold':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o threshold.');
+          return;
+        }
+        setActiveTool('threshold');
+        break;
+      case 'Dilatação':
+        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
+        setActiveTool('dilatacao');
+        break;
+      case 'Erosão':
+        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
+        setActiveTool('erodacao');
+        break;
+      case 'Abertura':
+        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
+        setActiveTool('abertura');
+        break;
+      case 'Fechamento':
+        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
+        setActiveTool('fechamento');
+        break;
+      case 'Afinamento':
+        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
+        setActiveTool('afinamento');
+        break;
+      case 'DESAFIO':
+        setActiveTool(null);
+        showToast(`${item} em desenvolvimento.`);
+        break;
+      default:
+        break;
+    }
+  };
+
+
+  const normalizeImageSource = useCallback((resultCanvas) => {
+    if (!resultCanvas) {
+      return null;
+    }
+
+    if (typeof resultCanvas.toDataURL === 'function') {
+      return resultCanvas.toDataURL('image/png');
+    }
+
+    return resultCanvas;
+  }, []);
+
+  const handleProcessedImage = useCallback((resultCanvas) => {
+    const normalized = normalizeImageSource(resultCanvas);
+
+    if (!normalized) {
+      return;
+    }
+
+    setProcessedImage(normalized);
+    setPreviewImage(null);
+    setActiveTool(null);
+  }, [normalizeImageSource]);
+
+  const handlePreviewImage = useCallback((resultCanvas) => {
+    const normalized = normalizeImageSource(resultCanvas);
+
+    if (!normalized) {
+      return;
+    }
+
+    setPreviewImage(normalized);
+  }, [normalizeImageSource]);
+
+  const closeActiveTool = useCallback(() => {
+    setActiveTool(null);
+    setPreviewImage(null);
+  }, []);
 
   return (
     <div style={styles.container} onClick={() => setOpenMenu(null)}>
@@ -24,9 +233,182 @@ export default function App() {
         toggleMenu={toggleMenu}
         setHoverMenu={setHoverMenu}
         setHoverItem={setHoverItem}
+        onMenuAction={handleMenuAction}
       />
-      <MainContent />
-      <StatusBar />
+      {activeTool === 'transladar' && currentImage && (
+        <DraggableToolPanel
+          title="Transladar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <TransladarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'rotacionar' && currentImage && (
+        <DraggableToolPanel
+          title="Rotacionar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <RotacionarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'espelhar' && currentImage && (
+        <DraggableToolPanel
+          title="Espelhar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <EspelharMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'aumentar' && currentImage && (
+        <DraggableToolPanel
+          title="Aumentar imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <AumentarMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'diminuir' && currentImage && (
+        <DraggableToolPanel
+          title="Diminuir imagem"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <DiminuirMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'grayscale' && currentImage && (
+        <DraggableToolPanel
+          title="Escala de cinza"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <GrayscaleMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'passaalta' && currentImage && (
+        <DraggableToolPanel
+          title="Passa-alta"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <PassaAltaMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'passabaixa' && currentImage && (
+        <DraggableToolPanel
+          title="Passa-baixa"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <PassaBaixaMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'threshold' && currentImage && (
+        <DraggableToolPanel
+          title="Threshold"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <ThresholdMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'dilatacao' && currentImage && (
+        <DraggableToolPanel title="Dilatação" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
+          <DilatacaoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
+        </DraggableToolPanel>
+      )}
+      {activeTool === 'erodacao' && currentImage && (
+        <DraggableToolPanel title="Erosão" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
+          <ErodacaoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
+        </DraggableToolPanel>
+      )}
+      {activeTool === 'abertura' && currentImage && (
+        <DraggableToolPanel title="Abertura" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
+          <AberturaMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
+        </DraggableToolPanel>
+      )}
+      {activeTool === 'fechamento' && currentImage && (
+        <DraggableToolPanel title="Fechamento" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
+          <FechamentoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
+        </DraggableToolPanel>
+      )}
+      {activeTool === 'afinamento' && currentImage && (
+        <DraggableToolPanel title="Afinamento" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
+          <AfinamentoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
+        </DraggableToolPanel>
+      )}
+
+      <MainContent
+        imageSrc={displayImage}
+        onOpenFilePicker={openFilePicker}
+      />
     </div>
   );
 }
