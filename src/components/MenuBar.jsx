@@ -10,6 +10,7 @@ export default function MenuBar({
   toggleMenu,
   setHoverMenu,
   setHoverItem,
+  onMenuAction,
 }) {
   const menuConfig = [
     { key: 'arquivo', label: 'Arquivo' },
@@ -33,6 +34,7 @@ export default function MenuBar({
           onToggle={toggleMenu}
           onHoverMenu={setHoverMenu}
           onHoverItem={setHoverItem}
+          onSelectItem={onMenuAction}
         />
       ))}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Header from './components/Header';
 import MenuBar from './components/MenuBar';
 import MainContent from './components/MainContent';
@@ -12,18 +12,44 @@ import GrayscaleMenu from './functions/filtros/grayscale/GrayscaleMenu';
 import PassaAltaMenu from './functions/filtros/passaalta/PassaAltaMenu';
 import PassaBaixaMenu from './functions/filtros/passabaixa/PassaBaixaMenu';
 import ThresholdMenu from './functions/filtros/threshold/ThresholdMenu';
-import MorfologiaMenu from './functions/morfologia/MorfologiaMenu';
-import DilatacaoMenu from './functions/morfologia/dilatacao/DilatacaoMenu';
-import ErodacaoMenu from './functions/morfologia/erodacao/ErodacaoMenu';
-import AberturaMenu from './functions/morfologia/abertura/AberturaMenu';
-import FechamentoMenu from './functions/morfologia/fechamento/FechamentoMenu';
-import AfinamentoMenu from './functions/morfologia/afinamento/AfinamentoMenu';
 import { styles } from './styles/appStyles';
+
+const getCenteredPanelPosition = () => {
+  const panelWidth = 520;
+  const panelHeight = 520;
+  const maxX = Math.max(16, window.innerWidth - panelWidth - 16);
+  const maxY = Math.max(16, window.innerHeight - panelHeight - 16);
+  const x = Math.min(Math.max((window.innerWidth - panelWidth) / 2, 16), maxX);
+  const y = Math.min(Math.max((window.innerHeight - panelHeight) / 2, 16), maxY);
+
+  return { x, y };
+};
 
 export default function App() {
   const [openMenu, setOpenMenu] = useState(null);
   const [hoverMenu, setHoverMenu] = useState(null);
   const [hoverItem, setHoverItem] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [processedImage, setProcessedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [activeTool, setActiveTool] = useState(null);
+  const [panelPosition, setPanelPosition] = useState(() => getCenteredPanelPosition());
+  const [toast, setToast] = useState(null);
+  const currentImage = processedImage || selectedImage;
+  const displayImage = previewImage || processedImage || selectedImage;
+  const fileInputRef = useRef(null);
+  const toastTimeoutRef = useRef(null);
+
+  const showToast = (message) => {
+    setToast(message);
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast(null);
+    }, 2500);
+  };
 
   const toggleMenu = (menu) => {
     setOpenMenu((current) => (current === menu ? null : menu));
@@ -155,25 +181,10 @@ export default function App() {
         setActiveTool('threshold');
         break;
       case 'Dilatação':
-        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
-        setActiveTool('dilatacao');
-        break;
       case 'Erosão':
-        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
-        setActiveTool('erodacao');
-        break;
       case 'Abertura':
-        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
-        setActiveTool('abertura');
-        break;
       case 'Fechamento':
-        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
-        setActiveTool('fechamento');
-        break;
       case 'Afinamento':
-        if (!currentImage) { showToast('Selecione uma imagem.'); return; }
-        setActiveTool('afinamento');
-        break;
       case 'DESAFIO':
         setActiveTool(null);
         showToast(`${item} em desenvolvimento.`);
@@ -225,8 +236,16 @@ export default function App() {
 
   return (
     <div style={styles.container} onClick={() => setOpenMenu(null)}>
+      {toast && <div style={styles.toast}>{toast}</div>}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={handleFileSelection}
+      />
       <Header />
-      <MenuBar 
+      <MenuBar
         openMenu={openMenu}
         hoverMenu={hoverMenu}
         hoverItem={hoverItem}
@@ -376,32 +395,6 @@ export default function App() {
             onProcessar={handleProcessedImage}
             onClose={closeActiveTool}
           />
-        </DraggableToolPanel>
-      )}
-
-      {activeTool === 'dilatacao' && currentImage && (
-        <DraggableToolPanel title="Dilatação" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
-          <DilatacaoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
-        </DraggableToolPanel>
-      )}
-      {activeTool === 'erodacao' && currentImage && (
-        <DraggableToolPanel title="Erosão" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
-          <ErodacaoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
-        </DraggableToolPanel>
-      )}
-      {activeTool === 'abertura' && currentImage && (
-        <DraggableToolPanel title="Abertura" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
-          <AberturaMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
-        </DraggableToolPanel>
-      )}
-      {activeTool === 'fechamento' && currentImage && (
-        <DraggableToolPanel title="Fechamento" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
-          <FechamentoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
-        </DraggableToolPanel>
-      )}
-      {activeTool === 'afinamento' && currentImage && (
-        <DraggableToolPanel title="Afinamento" initialPosition={panelPosition} onPositionChange={setPanelPosition} onClose={closeActiveTool}>
-          <AfinamentoMenu initialImageSrc={currentImage} onPreview={handlePreviewImage} onProcessar={handleProcessedImage} onClose={closeActiveTool} />
         </DraggableToolPanel>
       )}
 
