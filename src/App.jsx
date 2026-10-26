@@ -12,6 +12,11 @@ import GrayscaleMenu from './functions/filtros/grayscale/GrayscaleMenu';
 import PassaAltaMenu from './functions/filtros/passaalta/PassaAltaMenu';
 import PassaBaixaMenu from './functions/filtros/passabaixa/PassaBaixaMenu';
 import ThresholdMenu from './functions/filtros/threshold/ThresholdMenu';
+import DilatacaoMenu from './functions/morfologia/dilatacao/DilatacaoMenu';
+import ErodacaoMenu from './functions/morfologia/erodacao/ErodacaoMenu';
+import AberturaMenu from './functions/morfologia/abertura/AberturaMenu';
+import FechamentoMenu from './functions/morfologia/fechamento/FechamentoMenu';
+import AfinamentoMenu from './functions/morfologia/afinamento/AfinamentoMenu';
 import { styles } from './styles/appStyles';
 
 const getCenteredPanelPosition = () => {
@@ -181,14 +186,43 @@ export default function App() {
         setActiveTool('threshold');
         break;
       case 'Dilatação':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a dilatação.');
+          return;
+        }
+        setActiveTool('dilatacao');
+        break;
       case 'Erosão':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a erosão.');
+          return;
+        }
+        setActiveTool('erodacao');
+        break;
       case 'Abertura':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar a abertura.');
+          return;
+        }
+        setActiveTool('abertura');
+        break;
       case 'Fechamento':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o fechamento.');
+          return;
+        }
+        setActiveTool('fechamento');
+        break;
       case 'Afinamento':
+        if (!currentImage) {
+          showToast('Selecione uma imagem antes de aplicar o afinamento.');
+          return;
+        }
+        setActiveTool('afinamento');
+        break;
       case 'DESAFIO':
         setActiveTool(null);
         showToast(`${item} em desenvolvimento.`);
-        break;
       default:
         break;
     }
@@ -390,6 +424,86 @@ export default function App() {
           onClose={closeActiveTool}
         >
           <ThresholdMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'dilatacao' && currentImage && (
+        <DraggableToolPanel
+          title="Dilatação"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <DilatacaoMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'erodacao' && currentImage && (
+        <DraggableToolPanel
+          title="Erosão"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <ErodacaoMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'abertura' && currentImage && (
+        <DraggableToolPanel
+          title="Abertura"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <AberturaMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'fechamento' && currentImage && (
+        <DraggableToolPanel
+          title="Fechamento"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <FechamentoMenu
+            initialImageSrc={currentImage}
+            onPreview={handlePreviewImage}
+            onProcessar={handleProcessedImage}
+            onClose={closeActiveTool}
+          />
+        </DraggableToolPanel>
+      )}
+
+      {activeTool === 'afinamento' && currentImage && (
+        <DraggableToolPanel
+          title="Afinamento"
+          initialPosition={panelPosition}
+          onPositionChange={setPanelPosition}
+          onClose={closeActiveTool}
+        >
+          <AfinamentoMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}
