@@ -13,7 +13,7 @@ import PassaAltaMenu from './functions/filtros/passaalta/PassaAltaMenu';
 import PassaBaixaMenu from './functions/filtros/passabaixa/PassaBaixaMenu';
 import ThresholdMenu from './functions/filtros/threshold/ThresholdMenu';
 import DilatacaoMenu from './functions/morfologia/dilatacao/DilatacaoMenu';
-import ErodacaoMenu from './functions/morfologia/erodacao/ErodacaoMenu';
+import ErosaoMenu from './functions/morfologia/erosao/ErosaoMenu';
 import AberturaMenu from './functions/morfologia/abertura/AberturaMenu';
 import FechamentoMenu from './functions/morfologia/fechamento/FechamentoMenu';
 import AfinamentoMenu from './functions/morfologia/afinamento/AfinamentoMenu';
@@ -197,7 +197,7 @@ export default function App() {
           showToast('Selecione uma imagem antes de aplicar a erosão.');
           return;
         }
-        setActiveTool('erodacao');
+        setActiveTool('erosao');
         break;
       case 'Abertura':
         if (!currentImage) {
@@ -448,14 +448,14 @@ export default function App() {
         </DraggableToolPanel>
       )}
 
-      {activeTool === 'erodacao' && currentImage && (
+      {activeTool === 'erosao' && currentImage && (
         <DraggableToolPanel
           title="Erosão"
           initialPosition={panelPosition}
           onPositionChange={setPanelPosition}
           onClose={closeActiveTool}
         >
-          <ErodacaoMenu
+          <ErosaoMenu
             initialImageSrc={currentImage}
             onPreview={handlePreviewImage}
             onProcessar={handleProcessedImage}

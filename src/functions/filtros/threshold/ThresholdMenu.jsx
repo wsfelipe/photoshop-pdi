@@ -144,7 +144,6 @@ export default function ThresholdMenu({
         </div>
 
         <div style={styles.optionButton}>
-          <span style={styles.icon}>◑</span>
 
           Threshold
 
@@ -153,9 +152,6 @@ export default function ThresholdMenu({
           </div>
         </div>
 
-        <div style={styles.current}>
-          Filtro atual: Threshold
-        </div>
       </div>
 
       <div style={styles.buttons}>

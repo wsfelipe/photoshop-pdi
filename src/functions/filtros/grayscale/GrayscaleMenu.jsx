@@ -144,7 +144,6 @@ export default function GrayscaleMenu({
         </div>
 
         <div style={styles.optionButton}>
-          <span style={styles.icon}>◐</span>
 
           Grayscale
 
@@ -153,9 +152,6 @@ export default function GrayscaleMenu({
           </div>
         </div>
 
-        <div style={styles.current}>
-          Filtro atual: Grayscale
-        </div>
       </div>
 
       <div style={styles.buttons}>

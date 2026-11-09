@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { erodacao } from "./erodacao";
+import { erosao } from "./erosao";
 
 const styles = {
   container: {
@@ -54,7 +54,7 @@ const styles = {
   buttonSecondary: { backgroundColor: "#444" },
 };
 
-export default function ErodacaoMenu({
+export default function ErosaoMenu({
   onPreview,
   onProcessar,
   initialImageSrc,
@@ -69,7 +69,7 @@ export default function ErodacaoMenu({
   }, [initialImageSrc]);
   useEffect(() => {
     if (!inputImage) return;
-    const result = erodacao(inputImage);
+    const result = erosao(inputImage);
     if (onPreview) onPreview(result);
   }, [inputImage, onPreview]);
   const handleApply = () => {
@@ -77,7 +77,7 @@ export default function ErodacaoMenu({
       alert("Carregue uma imagem");
       return;
     }
-    const result = erodacao(inputImage);
+    const result = erosao(inputImage);
     if (onProcessar) onProcessar(result);
     if (onClose) onClose();
   };
@@ -88,13 +88,11 @@ export default function ErodacaoMenu({
     <div style={styles.container}>
       <div style={styles.section}>
         <div style={styles.sectionTitle}>Morfológica</div>
-        <div style={styles.optionButton}>
-          <span style={styles.icon}>▯</span>Erosão
+        <div style={styles.optionButton}>Erosão
           <div style={styles.description}>
             Reduz regiões brancas (elemento 3×3)
           </div>
         </div>
-        <div style={styles.current}>Operação: Erosão</div>
       </div>
       <div style={styles.buttons}>
         <button type="button" style={styles.button} onClick={handleApply}>

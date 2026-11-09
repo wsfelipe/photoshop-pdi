@@ -88,13 +88,11 @@ export default function DilatacaoMenu({
     <div style={styles.container}>
       <div style={styles.section}>
         <div style={styles.sectionTitle}>Morfológica</div>
-        <div style={styles.optionButton}>
-          <span style={styles.icon}>▮</span>Dilatação
+        <div style={styles.optionButton}>Dilatação
           <div style={styles.description}>
             Expande regiões brancas (elemento 3×3)
           </div>
         </div>
-        <div style={styles.current}>Operação: Dilatação</div>
       </div>
       <div style={styles.buttons}>
         <button type="button" style={styles.button} onClick={handleApply}>

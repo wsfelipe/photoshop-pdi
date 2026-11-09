@@ -88,13 +88,11 @@ export default function FechamentoMenu({
     <div style={styles.container}>
       <div style={styles.section}>
         <div style={styles.sectionTitle}>Morfológica</div>
-        <div style={styles.optionButton}>
-          <span style={styles.icon}>◉</span>Fechamento
+        <div style={styles.optionButton}>Fechamento
           <div style={styles.description}>
             Combina dilatação + erosão (elemento 3×3)
           </div>
         </div>
-        <div style={styles.current}>Operação: Fechamento</div>
       </div>
       <div style={styles.buttons}>
         <button type="button" style={styles.button} onClick={handleApply}>

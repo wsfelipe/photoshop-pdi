@@ -1,6 +1,6 @@
 import { criarElemento } from '../elementoEstruturante';
 
-export function erodacao(image, tamanho = 3, conexoes = 8) {
+export function erosao(image, tamanho = 3, conexoes = 8) {
   let sourceCanvas, width, height;
 
   if (image instanceof HTMLCanvasElement) {

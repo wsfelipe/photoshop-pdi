@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dilatacao, erodacao, abertura, fechamento, afinamento } from './morfologia';
+import { dilatacao, erosao, abertura, fechamento, holt } from './morfologia';
 
 const styles = {
   container: {
@@ -132,7 +132,7 @@ export default function MorfologiaMenu({
           resultCanvas = dilatacao(inputImage);
           break;
         case 'Erosão':
-          resultCanvas = erodacao(inputImage);
+          resultCanvas = erosao(inputImage);
           break;
         case 'Abertura':
           resultCanvas = abertura(inputImage);
@@ -141,7 +141,7 @@ export default function MorfologiaMenu({
           resultCanvas = fechamento(inputImage);
           break;
         case 'Afinamento':
-          resultCanvas = afinamento(inputImage);
+          resultCanvas = holt(inputImage);
           break;
         default:
           return;
@@ -181,7 +181,7 @@ export default function MorfologiaMenu({
           resultCanvas = dilatacao(inputImage);
           break;
         case 'Erosão':
-          resultCanvas = erodacao(inputImage);
+          resultCanvas = erosao(inputImage);
           break;
         case 'Abertura':
           resultCanvas = abertura(inputImage);
@@ -190,7 +190,7 @@ export default function MorfologiaMenu({
           resultCanvas = fechamento(inputImage);
           break;
         case 'Afinamento':
-          resultCanvas = afinamento(inputImage);
+          resultCanvas = holt(inputImage);
           break;
         default:
           return;
@@ -237,7 +237,7 @@ export default function MorfologiaMenu({
     },
     {
       name: 'Afinamento',
-      description: 'Reduz objetos a esqueletos de largura de um pixel (Zhang-Suen)',
+      description: 'Afinamento morfológico pelo método de Holt',
     },
   ];
 
@@ -260,10 +260,6 @@ export default function MorfologiaMenu({
             <div style={styles.description}>{op.description}</div>
           </button>
         ))}
-
-        <div style={styles.current}>
-          Operação atual: {currentOperation || 'Nenhuma selecionada'}
-        </div>
       </div>
 
       {operationStatus && (
