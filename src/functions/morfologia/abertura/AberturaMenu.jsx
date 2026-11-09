@@ -88,13 +88,11 @@ export default function AberturaMenu({
     <div style={styles.container}>
       <div style={styles.section}>
         <div style={styles.sectionTitle}>Morfológica</div>
-        <div style={styles.optionButton}>
-          <span style={styles.icon}>⊕</span>Abertura
+        <div style={styles.optionButton}>Abertura
           <div style={styles.description}>
             Combina erosão + dilatação (elemento 3×3)
           </div>
         </div>
-        <div style={styles.current}>Operação: Abertura</div>
       </div>
       <div style={styles.buttons}>
         <button type="button" style={styles.button} onClick={handleApply}>

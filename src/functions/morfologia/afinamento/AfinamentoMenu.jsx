@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { afinamento } from "./afinamento";
+import { holt } from "./holt";
 
 const styles = {
   container: {
@@ -69,7 +69,7 @@ export default function AfinamentoMenu({
   }, [initialImageSrc]);
   useEffect(() => {
     if (!inputImage) return;
-    const result = afinamento(inputImage);
+    const result = holt(inputImage);
     if (onPreview) onPreview(result);
   }, [inputImage, onPreview]);
   const handleApply = () => {
@@ -77,7 +77,7 @@ export default function AfinamentoMenu({
       alert("Carregue uma imagem");
       return;
     }
-    const result = afinamento(inputImage);
+    const result = holt(inputImage);
     if (onProcessar) onProcessar(result);
     if (onClose) onClose();
   };
@@ -87,14 +87,12 @@ export default function AfinamentoMenu({
   return (
     <div style={styles.container}>
       <div style={styles.section}>
-        <div style={styles.sectionTitle}>Morfológica</div>
-        <div style={styles.optionButton}>
-          <span style={styles.icon}>⚛</span>Afinamento
+        <div style={styles.sectionTitle}>Método</div>
+        <div style={styles.optionButton}>Holt
           <div style={styles.description}>
-            Esqueletização Zhang-Suen (elemento 3×3)
+            Afinamento morfológico com elemento 3×3
           </div>
         </div>
-        <div style={styles.current}>Operação: Afinamento</div>
       </div>
       <div style={styles.buttons}>
         <button type="button" style={styles.button} onClick={handleApply}>
